@@ -3,8 +3,8 @@ const mysql=require('mysql');
 
 const baglantidb=mysql.createConnection({
     host: 'localhost',
-    user: 'root',
-    password: '1q2w3e++',
+    user: '...',
+    password: '...',
     database: 'sensor'
 });
 
@@ -16,14 +16,14 @@ baglantidb.connect(function(err)
         console.log('Veritabanina başarıyla bağlanıldı');
 });
 
-  const broker = 'mqtt://192.168.100.40:1883';
+  const broker = 'yourUrl';
   
 
   
   const options = {
-      clientId: 'nodeClient',
-      username: 'beacon',
-      password: '12345q'
+      clientId: '...',
+      username: '...',
+      password: '...'
     }
     // topic and message payload:
     let myTopic = 'espresense/devices/ac233f529aa0/xxl89';
@@ -82,6 +82,3 @@ client.on('message', (myTopic, paylaod) => {
 
 
 
-
-// let tarih = Date.now();
-// console.log(tarih.toISOString());
