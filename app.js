@@ -36,49 +36,51 @@ client.on('message', (myTopic, paylaod) => {
 
     let device=JSON.parse(paylaod.toString())
 
-  console.log(device.rssi);
-  console.log(device.mac.toString());
-  console.log(device.distance);
+  // console.log(device.rssi);
+  // console.log(device.mac.toString());
+  // console.log(device.distance);
+  
   console.log(`topic`, myTopic)
 
 
-  let sql = `SELECT * FROM sensor`;
-  baglantidb.query(sql, (error, results, fields) => {
-    if (error) {
-      return console.error(error.message);
-    }
-    console.log(results);
-  });  
+    baglantidb.query("SELECT mac FROM sensor", (error, results, fields) => {
+       
+        if (error) {
+             return console.error(error.message);
+          }
+        let liste = {};
+        results.forEach((r, i) => {
+            liste =results[i].mac;
+        });
+        // console.log(liste)
+        let data=kontrol(liste,device)
+        return data;
+})
 
-  if(device.mac.toString() == sql.mac){ 
-    baglantidb.query(`UPDATE sensor SET rssi =?, distance=? WHERE mac=?`,function (err, res) { //payload eklenecek
-                    if(err) {
-                        console.log("error: ", err);
-                          result(null, err); 
-                       }
-                     else{   
-                       result(null, res);
-                       console.log("güncellendi")
-                          }
-                      }); }
+function kontrol(data,device){
+
+  if(data != device.mac){
+    baglantidb.query(`INSERT INTO sensor (rssi,mac,distance) VALUES ('${device.rssi}','${device.mac}',${device.distance})`, function (error,results) {// console log kısmını değiştir
+
+          if (error) {
+            return console.error(error.message);
+          }
+          console.log(results);
+            });
+  }
   else{
+    baglantidb.query(`UPDATE sensor SET rssi =?, distance=? WHERE mac='${device.mac}'`,[device.rssi,device.distance], (error, results, fields) => {
+                if (error) {
+                  return console.error(error.message);
+                }
+            
+                console.log(results);
+         
+              });
 
-    baglantidb.query(`INSERT INTO sensor (id,rssi,mac,distance) VALUES ('${id}','${rssi}','${mac}',${distance})`, function (err, res) {// console log kısmını değiştir
-    if (err) {
-      console.log("error: ", err);
-      result(err, null);
-      return;
-    } 
-        console.log("Sensor oluşturuldu ");
-         result(null,res);
-});
+  }
 }
 
-
-
-
-
-})//client.on
 
 
 
