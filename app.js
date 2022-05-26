@@ -48,39 +48,36 @@ client.on('message', (myTopic, paylaod) => {
         if (error) {
              return console.error(error.message);
           }
-        let liste = {};
+        let dbListe = [];
         results.forEach((r, i) => {
-            liste =results[i].mac;
+            dbListe[i] =results[i].mac;
         });
         // console.log(liste)
-        let data=kontrol(liste,device)
-        return data;
-})
+        return kontrol(dbListe,device)
+ 
+})})
 
-function kontrol(data,device){
-
-  if(data != device.mac){
-    baglantidb.query(`INSERT INTO sensor (rssi,mac,distance) VALUES ('${device.rssi}','${device.mac}',${device.distance})`, function (error,results) {// console log kısmını değiştir
-
-          if (error) {
-            return console.error(error.message);
-          }
-          console.log(results);
-            });
-  }
-  else{
-    baglantidb.query(`UPDATE sensor SET rssi =?, distance=? WHERE mac='${device.mac}'`,[device.rssi,device.distance], (error, results, fields) => {
+function kontrol(dbListe,device){
+    if(dbListe.find(dbVeri => dbVeri == device.id)){
+            baglantidb.query(`UPDATE sensor SET rssi =?, distance=? WHERE mac='${device.id}'`,[device.rssi,device.distance], (error, results, fields) => {
                 if (error) {
-                  return console.error(error.message);
-                }
-            
-                console.log(results);
-         
-              });
+                      return console.error(error.message);
+                    }
+                
+                    console.log(results);
+                    console.log("update edildi")
+                  });
+        }
+      else{
+           baglantidb.query(`INSERT INTO sensor (rssi,mac,distance) VALUES ('${device.rssi}','${device.id}','${device.distance}')`, function (error,results) {
+              if (error) {
+                return console.error(error.message);
+              }
+              console.log(results);
+              console.log("ekleme yapıldı")
+                });
+      }
 
-  }
 }
-
-
 
 
